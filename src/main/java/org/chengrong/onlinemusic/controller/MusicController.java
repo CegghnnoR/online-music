@@ -9,6 +9,7 @@ import org.chengrong.onlinemusic.tools.Constant;
 import org.chengrong.onlinemusic.tools.ResponseBodyMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -79,6 +81,25 @@ public class MusicController {
             dest.delete();
             return new ResponseBodyMessage<>(-1, "数据库上传失败！", false);
         }
+    }
+
+    @RequestMapping("/get")
+    public ResponseEntity<byte[]> func(String path) {
+        File file = new File(SAVE_PATH + "/" + path);
+        byte[] a = null;
+        try {
+            a = Files.readAllBytes(file.toPath());
+            if (a == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            return ResponseEntity.ok(a);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.badRequest().build();
+//        return ResponseEntity.internalServerError().build();
+//        return ResponseEntity.notFound().build();
+//        return ResponseEntity.ok(a);
     }
 
 }
